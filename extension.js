@@ -3,12 +3,15 @@ const ver = 5.199;
 let timer_id;
 let current_track;
 let status_bar_item;
+let shown = false;
 
 /*
 This method sets the text of the status bar item
 
 It checks if this has been already set (prevents multiple rewrites of the same values)
-If not it rewrites the text ot the status bar item
+If not, it checks if value is an empty string
+If it is, it hides the status bar item
+If not, it shows the track name in status bar
 Changes the current track
 
     Parameters:
@@ -17,8 +20,19 @@ Changes the current track
 
 function SetTrack(track) {
     if (track != current_track) {
-        status_bar_item.text = track;
-        current_track = track;
+        if (track == "") {
+            if (shown) {
+                shown = false;
+                status_bar_item.hide();
+            }
+        } else {
+            if (!shown) {
+                shown = true;
+                status_bar_item.show();
+            }
+            status_bar_item.text = track;
+        }
+        current_track = track; 
     }
 }
 
@@ -26,7 +40,9 @@ function SetTrack(track) {
 This method gets the track name from VK API
 
 It fetches the status of the user
-Returns the track name or the error text
+If music is translating in user's status, it returns the track name
+If music is not translating in user's status, it returns empty string
+If something goes wrong, it returns error message
 
     Parameters:
         token (string): token that is used for getting information from VK API
@@ -41,7 +57,10 @@ async function GetMusic(token) {
     }
     const data = await response.json();
     if (data.response != undefined) {
-        return "♫ " + data.response.text;
+        if (data.response.audio != undefined) { 
+            return "♫ " + data.response.text;
+        }
+        return "";
     }
     return "Token Error";
 }
@@ -108,7 +127,6 @@ function activate(context) {
     console.log("VkMusicPlugin Activated");
 
     status_bar_item = vscode.window.createStatusBarItem();
-    status_bar_item.show();
     context.secrets.get("token").then(token => {
         if (token != undefined) {
             StartLoop(token);
