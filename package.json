@@ -1,8 +1,10 @@
 {
   "name": "vkmusicplugin",
   "displayName": "VkMusicPlugin",
-  "description": "Plugin that sends notification with information about track that you are currently listening on VkMusic",
+  "description": "Plugin that shows the track that you are currently listening on VkMusic in status bar",
   "version": "0.0.1",
+  "publisher": "DimaChizh123",
+  "repository": "https://github.com/DimaChizh123/VkMusicPlugin",
   "engines": {
     "vscode": "^1.106.1"
   },
